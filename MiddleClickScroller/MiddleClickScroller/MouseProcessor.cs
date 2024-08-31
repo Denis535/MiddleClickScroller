@@ -23,14 +23,20 @@ public class MouseProcessor : MouseProcessorBase {
 
     private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
         if ((bool) e.NewValue == false) {
-            Timer?.Stop();
-            Timer = null;
+            if (Timer != null) {
+                Timer.Stop();
+                Timer = null;
+                View.VisualElement.ReleaseMouseCapture();
+            }
         }
     }
 
     private void OnClosed(object sender, EventArgs e) {
-        Timer?.Stop();
-        Timer = null;
+        if (Timer != null) {
+            Timer.Stop();
+            Timer = null;
+            View.VisualElement.ReleaseMouseCapture();
+        }
         View.VisualElement.IsVisibleChanged -= OnIsVisibleChanged;
         View.Closed -= OnClosed;
     }
@@ -38,11 +44,12 @@ public class MouseProcessor : MouseProcessorBase {
     public override void PreprocessMouseDown(MouseButtonEventArgs e) {
         if (e.ChangedButton == MouseButton.Middle) {
             if (Timer == null) {
+                View.VisualElement.CaptureMouse();
                 Timer = new DispatcherTimer(
                     TimeSpan.FromMilliseconds( 20 ),
                     DispatcherPriority.Normal,
                     (sender, e) => {
-                        View.ViewScroller.ScrollViewportVerticallyByPixels( -5 );
+                        View.ViewScroller.ScrollViewportVerticallyByPixels( -3 );
                     },
                     View.VisualElement.Dispatcher );
             }
@@ -51,8 +58,11 @@ public class MouseProcessor : MouseProcessorBase {
 
     public override void PreprocessMouseUp(MouseButtonEventArgs e) {
         if (e.ChangedButton == MouseButton.Middle) {
-            Timer?.Stop();
-            Timer = null;
+            if (Timer != null) {
+                Timer.Stop();
+                Timer = null;
+                View.VisualElement.ReleaseMouseCapture();
+            }
         }
     }
 
