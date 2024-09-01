@@ -1,5 +1,5 @@
 ﻿#nullable enable
-namespace MiddleClickScroller; 
+namespace MiddleClickScroller;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
